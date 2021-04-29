@@ -17,15 +17,24 @@ public class CommandListener extends ListenerAdapter {
         if (event.getAuthor().isBot()) return;
 
         String messageString = event.getMessage().getContentDisplay(); //formatted message
-        String[] messageSplit = messageString.substring(1).split("\\s+");
+        int messageSplitLength = 0;
+        String messageSplitZero = "";
+
+        try {
+            String[] messageSplit = messageString.substring(1).split("\\s+");
+            messageSplitLength = messageSplit.length;
+            messageSplitZero = messageSplit[0];
+        } catch (StringIndexOutOfBoundsException e) {
+            // join message
+        }
 
         if (event.isFromType(ChannelType.PRIVATE)) {
             PrivateChannel channel = event.getPrivateChannel();
             Message message = event.getMessage();
             User user = event.getAuthor();
 
-            if (messageString.startsWith(prefix) && messageSplit.length > 0) {
-                if (!DiscordBot.INSTANCE.getPrivCmdMan().perform(messageSplit[0], user, channel, message)) {
+            if (messageString.startsWith(prefix) && messageSplitLength > 0) {
+                if (!DiscordBot.INSTANCE.getPrivCmdMan().perform(messageSplitZero, user, channel, message)) {
                     channel.sendMessage("unknown command").queue();
                 }
             }
@@ -34,8 +43,8 @@ public class CommandListener extends ListenerAdapter {
         if (event.isFromType(ChannelType.TEXT)) {
             TextChannel channel = event.getTextChannel();
 
-            if (messageString.startsWith(prefix) && messageSplit.length > 0) {
-                if (!DiscordBot.INSTANCE.getServCmdMan().perform(messageSplit[0], event.getMember(), channel, event.getMessage())) {
+            if (messageString.startsWith(prefix) && messageSplitLength > 0) {
+                if (!DiscordBot.INSTANCE.getServCmdMan().perform(messageSplitZero, event.getMember(), channel, event.getMessage())) {
                     channel.sendMessage("unknown command").queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
                 }
             }

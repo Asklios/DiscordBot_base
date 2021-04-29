@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 import javax.security.auth.login.LoginException;
 import java.io.BufferedReader;
@@ -39,6 +41,15 @@ public class DiscordBot {
         final String botToken = new PropertiesReader().getBotToken();
 
         JDABuilder builder = JDABuilder.createDefault(botToken);
+
+        /*
+          Find out more about Gateway Intents and Member Cache Policy:
+          https://github.com/DV8FromTheWorld/JDA/wiki/Gateway-Intents-and-Member-Cache-Policy
+
+          builder.enableIntents(GatewayIntent.GUILD_PRESENCES);
+          builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
+          builder.setMemberCachePolicy(MemberCachePolicy.ALL);
+         */
 
         builder.addEventListeners(new CommandListener());
 
@@ -79,12 +90,5 @@ public class DiscordBot {
                 e.printStackTrace();
             }
         }).start();
-    }
-
-    public void shutdownCode() {
-        if (jda != null) {
-            jda.shutdown();
-            System.out.println("Bot Status: offline");
-        }
     }
 }
